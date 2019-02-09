@@ -34,6 +34,8 @@ func (gen *generator_t) genInput(in *input_t, N uint64) {
 
 func oneTask(in *input_t, S []uint64) (uint64, uint64, uint64) {
 	var min, max, sum uint64
+	min = S[0]
+	max = S[0]
 	for i := range S {
 		switch in.t {
 		case 0:
@@ -62,11 +64,14 @@ func solve(gen *generator_t, t, N uint64) {
 	for i := uint64(0); i < t; i++ {
 		gen.genInput(&in, N)
 		min, max, sum = oneTask(&in, S[in.b:in.e+1])
-		minX ^= min
-		maxX ^= max
-		sumX ^= sum
+		if in.t == 0 {
+			minX ^= min
+			maxX ^= max
+			sumX ^= sum
+		}
 		//fmt.Println(in)
 		//fmt.Println(S)
+		//fmt.Printf("%d %d %d\n", min, max, sum)
 	}
 	fmt.Printf("%d\n%d\n%d\n", minX, maxX, sumX)
 }
