@@ -32,27 +32,43 @@ func (gen *generator_t) genInput(in *input_t, N uint64) {
 	in.A = gen.nextInt() % N
 }
 
-func oneTask(in *input_t, S []uint64) {
+func oneTask(in *input_t, S []uint64) (uint64, uint64, uint64) {
+	var min, max, sum uint64
 	for i := range S {
 		switch in.t {
 		case 0:
+			if S[i] < min {
+				min = S[i]
+			}
+			if S[i] > max {
+				max = S[i]
+			}
+			sum += S[i]
 		case 1:
 			S[i] += in.A
 		case 2:
 			S[i] = in.A
 		}
 	}
+	return min, max, sum
 }
 
 func solve(gen *generator_t, t, N uint64) {
 	var in input_t
+	var min, sum, max uint64
+	var minX, sumX, maxX uint64
 	S := make([]uint64, N)
+
 	for i := uint64(0); i < t; i++ {
 		gen.genInput(&in, N)
-		oneTask(&in, S[in.b:in.e+1])
+		min, max, sum = oneTask(&in, S[in.b:in.e+1])
+		minX ^= min
+		maxX ^= max
+		sumX ^= sum
 		//fmt.Println(in)
 		//fmt.Println(S)
 	}
+	fmt.Printf("%d\n%d\n%d\n", minX, maxX, sumX)
 }
 
 func main() {
