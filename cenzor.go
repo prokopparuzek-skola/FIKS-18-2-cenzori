@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
 
 type input_t struct {
 	t uint64
@@ -55,7 +59,7 @@ func oneTask(in *input_t, S []uint64) (uint64, uint64, uint64) {
 	return min, max, sum
 }
 
-func solve(gen *generator_t, t, N uint64) {
+func solve(gen *generator_t, t, N uint64, w *bufio.Writer) {
 	var in input_t
 	var min, sum, max uint64
 	var minX, sumX, maxX uint64
@@ -73,17 +77,20 @@ func solve(gen *generator_t, t, N uint64) {
 		//fmt.Println(S)
 		//fmt.Printf("%d %d %d\n", min, max, sum)
 	}
-	fmt.Printf("%d\n%d\n%d\n", minX, maxX, sumX)
+	fmt.Fprintf(w, "%d\n%d\n%d\n", minX, maxX, sumX)
 }
 
 func main() {
 	var T uint8
 	fmt.Scanf("%d", &T)
+
+	w := bufio.NewWriter(os.Stdout)
+	defer w.Flush()
 	for i := uint8(0); i < T; i++ {
 		var generator generator_t
 		var N, t uint64
 
 		fmt.Scanf("%d %d %d %d %d", &t, &N, &generator.a, &generator.b, &generator.x)
-		solve(&generator, t, N)
+		solve(&generator, t, N, w)
 	}
 }
