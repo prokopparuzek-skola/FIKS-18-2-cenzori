@@ -32,8 +32,16 @@ func (gen *generator_t) genInput(in *input_t, N uint64) {
 	in.A = gen.nextInt() % N
 }
 
-func oneTask(gen *generator_t) {
-
+func oneTask(in input_t, S []uint64) {
+	for i := in.b; i <= in.e; i++ {
+		switch in.t {
+		case 0:
+		case 1:
+			S[i] += in.A
+		case 2:
+			S[i] = in.A
+		}
+	}
 }
 
 func main() {
