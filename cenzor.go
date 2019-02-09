@@ -16,7 +16,7 @@ type generator_t struct {
 }
 
 func (gen *generator_t) nextInt() uint64 {
-	gen.x = (gen.x*gen.a + gen.b) % uint64(10000000007)
+	gen.x = (gen.x*gen.a + gen.b) % uint64(1000000007)
 	return gen.x
 }
 
@@ -32,8 +32,8 @@ func (gen *generator_t) genInput(in *input_t, N uint64) {
 	in.A = gen.nextInt() % N
 }
 
-func oneTask(in input_t, S []uint64) {
-	for i := in.b; i <= in.e; i++ {
+func oneTask(in *input_t, S []uint64) {
+	for i := range S {
 		switch in.t {
 		case 0:
 		case 1:
@@ -41,6 +41,17 @@ func oneTask(in input_t, S []uint64) {
 		case 2:
 			S[i] = in.A
 		}
+	}
+}
+
+func solve(gen *generator_t, t, N uint64) {
+	var in input_t
+	S := make([]uint64, N)
+	for i := uint64(0); i < t; i++ {
+		gen.genInput(&in, N)
+		oneTask(&in, S[in.b:in.e+1])
+		//fmt.Println(in)
+		//fmt.Println(S)
 	}
 }
 
@@ -52,5 +63,6 @@ func main() {
 		var N, t uint64
 
 		fmt.Scanf("%d %d %d %d %d", &t, &N, &generator.a, &generator.b, &generator.x)
+		solve(&generator, t, N)
 	}
 }
