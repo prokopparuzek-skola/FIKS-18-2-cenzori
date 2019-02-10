@@ -70,7 +70,7 @@ func increase(S []leave, vrchol uint64, where query_t, what query_t, inc uint64)
 		increase(S, vrchol*2+1, query_t{stred, where.j}, what, inc)
 	} else {
 		increase(S, (vrchol)*2, query_t{where.i, stred}, query_t{what.i, stred}, inc)
-		increase(S, (vrchol)*2+1, query_t{stred + 1, where.j}, query_t{stred + 1, what.j}, inc)
+		increase(S, (vrchol)*2+1, query_t{stred, where.j}, query_t{stred, what.j}, inc)
 	}
 	if S[vrchol*2].min+S[vrchol*2].inc < S[vrchol*2+1].min+S[vrchol*2+1].inc {
 		S[vrchol].min = S[vrchol*2].min + S[vrchol*2].inc
@@ -102,6 +102,11 @@ func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 		ans.sum = S[vrchol].sum
 		return ans
 	}
+	/*if (where.i+where.j)%2 == 0 {
+		stred = (where.i+where.j)/2 - 1
+	} else {
+		stred = (where.i + where.j) / 2
+	}*/
 	stred = (where.i + where.j) / 2
 	if what.j <= stred {
 		return search(S, (vrchol)*2, query_t{where.i, stred}, what)
@@ -109,7 +114,7 @@ func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 		return search(S, (vrchol)*2+1, query_t{stred, where.j}, what)
 	} else {
 		ans1 := search(S, (vrchol)*2, query_t{where.i, stred}, query_t{what.i, stred})
-		ans2 := search(S, (vrchol)*2+1, query_t{stred + 1, where.j}, query_t{stred + 1, what.j})
+		ans2 := search(S, (vrchol)*2+1, query_t{stred, where.j}, query_t{stred, what.j})
 		if ans1.max > ans2.max {
 			ans.max = ans1.max
 		}
@@ -126,9 +131,9 @@ func oneTask(in *input_t, S []leave) answer_t {
 
 	switch in.t {
 	case 0:
-		ans = search(S, 1, query_t{1, uint64(len(S) / 2)}, query_t{in.b + 1, in.e + 1})
+		ans = search(S, 1, query_t{1, uint64(len(S)/2) + 1}, query_t{in.b + 1, in.e + 2})
 	case 1:
-		increase(S, 1, query_t{1, uint64(len(S) / 2)}, query_t{in.b + 1, in.e + 1}, in.A)
+		increase(S, 1, query_t{1, uint64(len(S)/2) + 1}, query_t{in.b + 1, in.e + 2}, in.A)
 	case 2:
 	}
 	return ans
