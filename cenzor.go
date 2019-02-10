@@ -26,8 +26,6 @@ type leave struct {
 	sum   uint64
 }
 
-<<<<<<< Updated upstream
-=======
 type answer_t struct {
 	min uint64
 	max uint64
@@ -39,7 +37,6 @@ type query_t struct {
 	j uint64
 }
 
->>>>>>> Stashed changes
 func (gen *generator_t) nextInt() uint64 {
 	gen.x = (gen.x*gen.a + gen.b) % uint64(1000000007)
 	return gen.x
@@ -105,11 +102,7 @@ func solve(gen *generator_t, t, N uint64, w *bufio.Writer) {
 	var in input_t
 	var min, sum, max uint64
 	var minX, sumX, maxX uint64
-<<<<<<< Updated upstream
-	S := make([]uint64, N*2)
-=======
 	S := make([]leave, N*2+1)
->>>>>>> Stashed changes
 
 	for i := uint64(0); i < t; i++ {
 		gen.genInput(&in, N)
