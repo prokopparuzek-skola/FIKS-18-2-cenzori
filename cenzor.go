@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 )
 
@@ -24,6 +25,8 @@ type leave struct {
 	min   uint64
 	max   uint64
 	sum   uint64
+	inc   uint64
+	set   int64
 }
 
 type answer_t struct {
@@ -54,9 +57,44 @@ func (gen *generator_t) genInput(in *input_t, N uint64) {
 	in.A = gen.nextInt() % N
 }
 
+func increase(S []leave, vrchol uint64, where query_t, what query_t, inc uint64) {
+	eval(S, vrchol)
+	if where.i == what.i && where.j == what.j {
+		S[vrchol].inc = inc
+		return
+	}
+	stred := (where.i + where.j) / 2
+	if what.j < stred {
+		increase(S, vrchol*2, query_t{where.i, stred}, what, inc)
+	} else if what.i >= stred {
+		increase(S, vrchol*2+1, query_t{stred, where.j}, what, inc)
+	} else {
+		increase(S, (vrchol)*2, query_t{where.i, stred}, query_t{what.i, stred}, inc)
+		increase(S, (vrchol)*2+1, query_t{stred + 1, where.j}, query_t{stred + 1, what.j}, inc)
+	}
+	if S[vrchol*2].min+S[vrchol*2].inc < S[vrchol*2+1].min+S[vrchol*2+1].inc {
+		S[vrchol].min = S[vrchol*2].min + S[vrchol*2].inc
+	}
+	if S[vrchol*2].max+S[vrchol*2].inc < S[vrchol*2+1].max+S[vrchol*2+1].inc {
+		S[vrchol].max = S[vrchol*2+1].max + S[vrchol*2+1].inc
+	}
+}
+
+func eval(S []leave, vrchol uint64) {
+	inc := S[vrchol].inc
+	S[vrchol].inc = 0
+	S[vrchol].min += inc
+	S[vrchol].max += inc
+	if vrchol < uint64(len(S)/2) {
+		S[vrchol*2].inc += inc
+		S[vrchol*2+1].inc += inc
+	}
+}
+
 func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 	var ans answer_t
 
+	eval(S, vrchol)
 	if where.i == what.i && where.j == what.j {
 		ans.max = S[vrchol].max
 		ans.min = S[vrchol].min
@@ -82,35 +120,32 @@ func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 	}
 }
 
-func oneTask(in *input_t, S []leave) (uint64, uint64, uint64) {
-	var min, max, sum uint64
-	min = S[0].value
-	max = S[0].value
-	for i := range S {
-		switch in.t {
-		case 0:
-		case 1:
-			S[i].value += in.A
-		case 2:
-			S[i].value = in.A
-		}
+func oneTask(in *input_t, S []leave) answer_t {
+	var ans answer_t
+
+	switch in.t {
+	case 0:
+		ans = search(S, 1, query_t{1, uint64(len(S) / 2)}, query_t{in.b + 1, in.e + 1})
+	case 1:
+		increase(S, 1, query_t{1, uint64(len(S) / 2)}, query_t{in.b + 1, in.e + 1}, in.A)
+	case 2:
 	}
-	return min, max, sum
+	return ans
 }
 
-func solve(gen *generator_t, t, N uint64, w *bufio.Writer) {
+func solve(gen generator_t, t, N uint64, w *bufio.Writer) {
 	var in input_t
-	var min, sum, max uint64
 	var minX, sumX, maxX uint64
-	S := make([]leave, N*2+1)
+	var ans answer_t
+	S := make([]leave, uint64(math.Pow(2, math.Log2(float64(N)))*2))
 
 	for i := uint64(0); i < t; i++ {
 		gen.genInput(&in, N)
-		min, max, sum = oneTask(&in, S)
+		ans = oneTask(&in, S)
 		if in.t == 0 {
-			minX ^= min
-			maxX ^= max
-			sumX ^= sum
+			minX ^= ans.min
+			maxX ^= ans.max
+			sumX ^= ans.sum
 		}
 		//fmt.Println(in)
 		//fmt.Println(S)
@@ -130,6 +165,6 @@ func main() {
 		var N, t uint64
 
 		fmt.Scanf("%d %d %d %d %d", &t, &N, &generator.a, &generator.b, &generator.x)
-		solve(&generator, t, N, w)
+		solve(generator, t, N, w)
 	}
 }
