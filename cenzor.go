@@ -64,7 +64,7 @@ func increase(S []leave, vrchol uint64, where query_t, what query_t, inc uint64)
 		return
 	}
 	stred := (where.i + where.j) / 2
-	if what.j < stred {
+	if what.j <= stred {
 		increase(S, vrchol*2, query_t{where.i, stred}, what, inc)
 	} else if what.i >= stred {
 		increase(S, vrchol*2+1, query_t{stred, where.j}, what, inc)
@@ -140,11 +140,7 @@ func solve(gen generator_t, t, N uint64, w *bufio.Writer) {
 	var ans answer_t
 	var size uint64
 
-	if N == uint64(math.Pow(2, float64(uint64(math.Log2(float64(N)))))) {
-		size = N * 2
-	} else {
-		size = uint64(math.Pow(2, float64(uint64(math.Log2(float64(N)))+1)))
-	}
+	size = uint64(math.Pow(2, math.Ceil(math.Log2(float64(N)))) * 2)
 	S := make([]leave, size)
 
 	for i := uint64(0); i < t; i++ {
