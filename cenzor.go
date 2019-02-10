@@ -93,15 +93,16 @@ func eval(S []leave, vrchol uint64) {
 
 func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 	var ans answer_t
+	var stred uint64
 
 	eval(S, vrchol)
-	if where.i == what.i && where.j == what.j {
+	if (where.i == what.i) && (where.j == what.j) {
 		ans.max = S[vrchol].max
 		ans.min = S[vrchol].min
 		ans.sum = S[vrchol].sum
 		return ans
 	}
-	stred := (where.i + where.j) / 2
+	stred = (where.i + where.j) / 2
 	if what.j <= stred {
 		return search(S, (vrchol)*2, query_t{where.i, stred}, what)
 	} else if what.i >= stred {
@@ -120,14 +121,14 @@ func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 	}
 }
 
-func oneTask(in *input_t, S []leave) answer_t {
+func oneTask(in *input_t, S []leave, N uint64) answer_t {
 	var ans answer_t
 
 	switch in.t {
 	case 0:
-		ans = search(S, 1, query_t{1, uint64(len(S) / 2)}, query_t{in.b + 1, in.e + 1})
+		ans = search(S, 1, query_t{1, N}, query_t{in.b + 1, in.e + 1})
 	case 1:
-		increase(S, 1, query_t{1, uint64(len(S) / 2)}, query_t{in.b + 1, in.e + 1}, in.A)
+		increase(S, 1, query_t{1, N}, query_t{in.b + 1, in.e + 1}, in.A)
 	case 2:
 	}
 	return ans
@@ -141,7 +142,7 @@ func solve(gen generator_t, t, N uint64, w *bufio.Writer) {
 
 	for i := uint64(0); i < t; i++ {
 		gen.genInput(&in, N)
-		ans = oneTask(&in, S)
+		ans = oneTask(&in, S, N)
 		if in.t == 0 {
 			minX ^= ans.min
 			maxX ^= ans.max
