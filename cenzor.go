@@ -121,14 +121,14 @@ func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 	}
 }
 
-func oneTask(in *input_t, S []leave, N uint64) answer_t {
+func oneTask(in *input_t, S []leave) answer_t {
 	var ans answer_t
 
 	switch in.t {
 	case 0:
-		ans = search(S, 1, query_t{1, N}, query_t{in.b + 1, in.e + 1})
+		ans = search(S, 1, query_t{1, uint64(len(S) / 2)}, query_t{in.b + 1, in.e + 1})
 	case 1:
-		increase(S, 1, query_t{1, N}, query_t{in.b + 1, in.e + 1}, in.A)
+		increase(S, 1, query_t{1, uint64(len(S) / 2)}, query_t{in.b + 1, in.e + 1}, in.A)
 	case 2:
 	}
 	return ans
@@ -138,11 +138,18 @@ func solve(gen generator_t, t, N uint64, w *bufio.Writer) {
 	var in input_t
 	var minX, sumX, maxX uint64
 	var ans answer_t
-	S := make([]leave, uint64(math.Pow(2, math.Log2(float64(N)))*2))
+	var size uint64
+
+	if N == uint64(math.Pow(2, float64(uint64(math.Log2(float64(N)))))) {
+		size = N * 2
+	} else {
+		size = uint64(math.Pow(2, float64(uint64(math.Log2(float64(N)))+1)))
+	}
+	S := make([]leave, size)
 
 	for i := uint64(0); i < t; i++ {
 		gen.genInput(&in, N)
-		ans = oneTask(&in, S, N)
+		ans = oneTask(&in, S)
 		if in.t == 0 {
 			minX ^= ans.min
 			maxX ^= ans.max
