@@ -19,6 +19,13 @@ type generator_t struct {
 	x uint64
 }
 
+type leave struct {
+	value uint64
+	min   uint64
+	max   uint64
+	sum   uint64
+}
+
 func (gen *generator_t) nextInt() uint64 {
 	gen.x = (gen.x*gen.a + gen.b) % uint64(1000000007)
 	return gen.x
@@ -63,7 +70,7 @@ func solve(gen *generator_t, t, N uint64, w *bufio.Writer) {
 	var in input_t
 	var min, sum, max uint64
 	var minX, sumX, maxX uint64
-	S := make([]uint64, N)
+	S := make([]uint64, N*2)
 
 	for i := uint64(0); i < t; i++ {
 		gen.genInput(&in, N)
