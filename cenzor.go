@@ -100,12 +100,12 @@ func setValue(S []leave, vrchol uint64, where, what query_t, set int64) {
 		setValue(S, (vrchol)*2+1, query_t{stred, where.j}, query_t{stred, what.j}, set)
 	}
 
-	if uint64(S[vrchol*2].set)+S[vrchol*2].inc < uint64(S[vrchol*2+1].set)+S[vrchol*2+1].inc {
-		S[vrchol].min = uint64(S[vrchol*2].set) + S[vrchol*2].inc
+	if S[vrchol*2].min+S[vrchol*2].inc < S[vrchol*2+1].min+S[vrchol*2+1].inc {
+		S[vrchol].min = S[vrchol*2].min + S[vrchol*2].inc
 	} else {
-		S[vrchol].min = uint64(S[vrchol*2+1].set) + S[vrchol*2+1].inc
+		S[vrchol].min = S[vrchol*2+1].min + S[vrchol*2+1].inc
 	}
-	if uint64(S[vrchol*2].set)+S[vrchol*2].inc < uint64(S[vrchol*2+1].set)+S[vrchol*2+1].inc {
+	if S[vrchol*2].max+S[vrchol*2].inc < S[vrchol*2+1].max+S[vrchol*2+1].inc {
 		S[vrchol].max = S[vrchol*2+1].max + S[vrchol*2+1].inc
 	} else {
 		S[vrchol].max = S[vrchol*2].max + S[vrchol*2].inc
@@ -177,6 +177,7 @@ func oneTask(in *input_t, S []leave) answer_t {
 	case 1:
 		increase(S, 1, query_t{1, uint64(len(S)/2) + 1}, query_t{in.b + 1, in.e + 2}, in.A)
 	case 2:
+		setValue(S, 1, query_t{1, uint64(len(S)/2 + 1)}, query_t{in.b + 1, in.e + 2}, int64(in.A))
 	}
 	return ans
 }
@@ -189,6 +190,9 @@ func solve(gen generator_t, t, N uint64, w *bufio.Writer) {
 
 	size = uint64(math.Pow(2, math.Ceil(math.Log2(float64(N)))) * 2)
 	S := make([]leave, size)
+	for i := range S {
+		S[i].set = -1
+	}
 
 	for i := uint64(0); i < t; i++ {
 		gen.genInput(&in, N)
@@ -198,8 +202,8 @@ func solve(gen generator_t, t, N uint64, w *bufio.Writer) {
 			maxX ^= ans.max
 			sumX ^= ans.sum
 		}
-		//fmt.Println(in)
-		//fmt.Println(S)
+		fmt.Println(in)
+		fmt.Println(S)
 		//fmt.Printf("%d %d %d\n", min, max, sum)
 	}
 	fmt.Fprintf(w, "%d\n%d\n%d\n", minX, maxX, sumX)
