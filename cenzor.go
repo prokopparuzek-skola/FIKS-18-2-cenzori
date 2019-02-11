@@ -72,15 +72,17 @@ func increase(S []leave, vrchol uint64, where query_t, what query_t, inc uint64)
 		increase(S, (vrchol)*2+1, query_t{stred, where.j}, query_t{stred, what.j}, inc)
 	}
 
-	if S[vrchol*2].min+S[vrchol*2].inc < S[vrchol*2+1].min+S[vrchol*2+1].inc {
-		S[vrchol].min = S[vrchol*2].min + S[vrchol*2].inc
+	eval(S, vrchol*2)
+	eval(S, vrchol*2+1)
+	if S[vrchol*2].min < S[vrchol*2+1].min {
+		S[vrchol].min = S[vrchol*2].min
 	} else {
-		S[vrchol].min = S[vrchol*2+1].min + S[vrchol*2+1].inc
+		S[vrchol].min = S[vrchol*2+1].min
 	}
-	if S[vrchol*2].max+S[vrchol*2].inc < S[vrchol*2+1].max+S[vrchol*2+1].inc {
-		S[vrchol].max = S[vrchol*2+1].max + S[vrchol*2+1].inc
+	if S[vrchol*2].max < S[vrchol*2+1].max {
+		S[vrchol].max = S[vrchol*2+1].max
 	} else {
-		S[vrchol].max = S[vrchol*2].max + S[vrchol*2].inc
+		S[vrchol].max = S[vrchol*2].max
 	}
 }
 
@@ -100,22 +102,24 @@ func setValue(S []leave, vrchol uint64, where, what query_t, set int64) {
 		setValue(S, (vrchol)*2+1, query_t{stred, where.j}, query_t{stred, what.j}, set)
 	}
 
-	if S[vrchol*2].min+S[vrchol*2].inc < S[vrchol*2+1].min+S[vrchol*2+1].inc {
-		S[vrchol].min = S[vrchol*2].min + S[vrchol*2].inc
+	eval(S, vrchol*2)
+	eval(S, vrchol*2+1)
+	if S[vrchol*2].min < S[vrchol*2+1].min {
+		S[vrchol].min = S[vrchol*2].min
 	} else {
-		S[vrchol].min = S[vrchol*2+1].min + S[vrchol*2+1].inc
+		S[vrchol].min = S[vrchol*2+1].min
 	}
-	if S[vrchol*2].max+S[vrchol*2].inc < S[vrchol*2+1].max+S[vrchol*2+1].inc {
-		S[vrchol].max = S[vrchol*2+1].max + S[vrchol*2+1].inc
+	if S[vrchol*2].max < S[vrchol*2+1].max {
+		S[vrchol].max = S[vrchol*2+1].max
 	} else {
-		S[vrchol].max = S[vrchol*2].max + S[vrchol*2].inc
+		S[vrchol].max = S[vrchol*2].max
 	}
 }
 
 func eval(S []leave, vrchol uint64) {
-	set := S[vrchol].set
-	S[vrchol].set = -1
-	if set != -1 {
+	if S[vrchol].set != -1 {
+		set := S[vrchol].set
+		S[vrchol].set = -1
 		S[vrchol].max = uint64(set)
 		S[vrchol].min = uint64(set)
 		if vrchol < uint64(len(S)/2) {
@@ -136,7 +140,6 @@ func eval(S []leave, vrchol uint64) {
 
 func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 	var ans answer_t
-	var stred uint64
 
 	eval(S, vrchol)
 	if (where.i == what.i) && (where.j == what.j) {
@@ -145,7 +148,7 @@ func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 		ans.sum = S[vrchol].sum
 		return ans
 	}
-	stred = (where.i + where.j) / 2
+	stred := (where.i + where.j) / 2
 	if what.j <= stred {
 		return search(S, (vrchol)*2, query_t{where.i, stred}, what)
 	} else if what.i >= stred {
@@ -202,8 +205,8 @@ func solve(gen generator_t, t, N uint64, w *bufio.Writer) {
 			maxX ^= ans.max
 			sumX ^= ans.sum
 		}
-		fmt.Println(in)
-		fmt.Println(S)
+		//fmt.Println(in)
+		//fmt.Println(S)
 		//fmt.Printf("%d %d %d\n", min, max, sum)
 	}
 	fmt.Fprintf(w, "%d\n%d\n%d\n", minX, maxX, sumX)
