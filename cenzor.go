@@ -123,8 +123,8 @@ func eval(S []leave, vrchol uint64) {
 		S[vrchol].max = uint64(set)
 		S[vrchol].min = uint64(set)
 		if vrchol < uint64(len(S)/2) {
-			S[vrchol*2].set += set
-			S[vrchol*2+1].set += set
+			S[vrchol*2].set = set
+			S[vrchol*2+1].set = set
 		}
 	}
 
