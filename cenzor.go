@@ -84,7 +84,46 @@ func increase(S []leave, vrchol uint64, where query_t, what query_t, inc uint64)
 	}
 }
 
+func setValue(S []leave, vrchol uint64, where, what query_t, set int64) {
+	eval(S, vrchol)
+	if where.i == what.i && where.j == what.j {
+		S[vrchol].set = set
+		return
+	}
+	stred := (where.i + where.j) / 2
+	if what.j <= stred {
+		setValue(S, vrchol*2, query_t{where.i, stred}, what, set)
+	} else if what.i >= stred {
+		setValue(S, vrchol*2+1, query_t{stred, where.j}, what, set)
+	} else {
+		setValue(S, (vrchol)*2, query_t{where.i, stred}, query_t{what.i, stred}, set)
+		setValue(S, (vrchol)*2+1, query_t{stred, where.j}, query_t{stred, what.j}, set)
+	}
+
+	if uint64(S[vrchol*2].set)+S[vrchol*2].inc < uint64(S[vrchol*2+1].set)+S[vrchol*2+1].inc {
+		S[vrchol].min = uint64(S[vrchol*2].set) + S[vrchol*2].inc
+	} else {
+		S[vrchol].min = uint64(S[vrchol*2+1].set) + S[vrchol*2+1].inc
+	}
+	if uint64(S[vrchol*2].set)+S[vrchol*2].inc < uint64(S[vrchol*2+1].set)+S[vrchol*2+1].inc {
+		S[vrchol].max = S[vrchol*2+1].max + S[vrchol*2+1].inc
+	} else {
+		S[vrchol].max = S[vrchol*2].max + S[vrchol*2].inc
+	}
+}
+
 func eval(S []leave, vrchol uint64) {
+	set := S[vrchol].set
+	S[vrchol].set = -1
+	if set != -1 {
+		S[vrchol].max = uint64(set)
+		S[vrchol].min = uint64(set)
+		if vrchol < uint64(len(S)/2) {
+			S[vrchol*2].set += set
+			S[vrchol*2+1].set += set
+		}
+	}
+
 	inc := S[vrchol].inc
 	S[vrchol].inc = 0
 	S[vrchol].max += inc
@@ -106,11 +145,6 @@ func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 		ans.sum = S[vrchol].sum
 		return ans
 	}
-	/*if (where.i+where.j)%2 == 0 {
-		stred = (where.i+where.j)/2 - 1
-	} else {
-		stred = (where.i + where.j) / 2
-	}*/
 	stred = (where.i + where.j) / 2
 	if what.j <= stred {
 		return search(S, (vrchol)*2, query_t{where.i, stred}, what)
