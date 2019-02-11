@@ -21,12 +21,11 @@ type generator_t struct {
 }
 
 type leave struct {
-	value uint64
-	min   uint64
-	max   uint64
-	sum   uint64
-	inc   uint64
-	set   int64
+	min uint64
+	max uint64
+	sum uint64
+	inc uint64
+	set int64
 }
 
 type answer_t struct {
@@ -72,19 +71,24 @@ func increase(S []leave, vrchol uint64, where query_t, what query_t, inc uint64)
 		increase(S, (vrchol)*2, query_t{where.i, stred}, query_t{what.i, stred}, inc)
 		increase(S, (vrchol)*2+1, query_t{stred, where.j}, query_t{stred, what.j}, inc)
 	}
+
 	if S[vrchol*2].min+S[vrchol*2].inc < S[vrchol*2+1].min+S[vrchol*2+1].inc {
 		S[vrchol].min = S[vrchol*2].min + S[vrchol*2].inc
+	} else {
+		S[vrchol].min = S[vrchol*2+1].min + S[vrchol*2+1].inc
 	}
 	if S[vrchol*2].max+S[vrchol*2].inc < S[vrchol*2+1].max+S[vrchol*2+1].inc {
 		S[vrchol].max = S[vrchol*2+1].max + S[vrchol*2+1].inc
+	} else {
+		S[vrchol].max = S[vrchol*2].max + S[vrchol*2].inc
 	}
 }
 
 func eval(S []leave, vrchol uint64) {
 	inc := S[vrchol].inc
 	S[vrchol].inc = 0
-	S[vrchol].min += inc
 	S[vrchol].max += inc
+	S[vrchol].min += inc
 	if vrchol < uint64(len(S)/2) {
 		S[vrchol*2].inc += inc
 		S[vrchol*2+1].inc += inc
