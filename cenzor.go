@@ -121,9 +121,13 @@ func search(S []leave, vrchol uint64, where query_t, what query_t) answer_t {
 		ans2 := search(S, (vrchol)*2+1, query_t{stred, where.j}, query_t{stred, what.j})
 		if ans1.max > ans2.max {
 			ans.max = ans1.max
+		} else {
+			ans.max = ans2.max
 		}
 		if ans1.min < ans2.min {
 			ans.min = ans1.min
+		} else {
+			ans.min = ans2.min
 		}
 		ans.sum = ans1.sum + ans2.sum
 		return ans
