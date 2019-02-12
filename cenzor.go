@@ -84,6 +84,7 @@ func increase(S []leave, vrchol uint64, where query_t, what query_t, inc uint64)
 	} else {
 		S[vrchol].max = S[vrchol*2].max
 	}
+	S[vrchol].sum = S[vrchol*2].sum + S[vrchol*2+1].sum
 }
 
 func setValue(S []leave, vrchol uint64, where, what query_t, set int64) {
@@ -114,6 +115,7 @@ func setValue(S []leave, vrchol uint64, where, what query_t, set int64) {
 	} else {
 		S[vrchol].max = S[vrchol*2].max
 	}
+	S[vrchol].sum = S[vrchol*2].sum + S[vrchol*2+1].sum
 }
 
 func eval(S []leave, vrchol uint64) {
@@ -122,6 +124,9 @@ func eval(S []leave, vrchol uint64) {
 		S[vrchol].set = -1
 		S[vrchol].max = uint64(set)
 		S[vrchol].min = uint64(set)
+		hladina := math.Floor(math.Log2(float64(vrchol)))
+		pod := math.Pow(2, math.Log2(float64(len(S)/2))-hladina)
+		S[vrchol].sum = uint64(pod) * uint64(set)
 		if vrchol < uint64(len(S)/2) {
 			if S[vrchol*2].inc != 0 {
 				S[vrchol*2].inc = 0
@@ -139,6 +144,9 @@ func eval(S []leave, vrchol uint64) {
 		S[vrchol].inc = 0
 		S[vrchol].max += inc
 		S[vrchol].min += inc
+		hladina := math.Floor(math.Log2(float64(vrchol)))
+		pod := math.Pow(2, math.Log2(float64(len(S)/2))-hladina)
+		S[vrchol].sum = uint64(pod)*uint64(inc) + S[vrchol].sum
 		if vrchol < uint64(len(S)/2) {
 			if S[vrchol*2].set != -1 {
 				eval(S, vrchol*2)
