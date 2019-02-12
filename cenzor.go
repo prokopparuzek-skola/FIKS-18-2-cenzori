@@ -124,29 +124,32 @@ func eval(S []leave, vrchol uint64) {
 		S[vrchol].min = uint64(set)
 		if vrchol < uint64(len(S)/2) {
 			if S[vrchol*2].inc != 0 {
-				eval(S, vrchol*2)
+				S[vrchol*2].inc = 0
 			}
 			if S[vrchol*2+1].inc != 0 {
-				eval(S, vrchol*2+1)
+				S[vrchol*2+1].inc = 0
 			}
 			S[vrchol*2].set = set
 			S[vrchol*2+1].set = set
 		}
 	}
 
-	inc := S[vrchol].inc
-	S[vrchol].inc = 0
-	S[vrchol].max += inc
-	S[vrchol].min += inc
-	if vrchol < uint64(len(S)/2) {
-		if S[vrchol*2].set != -1 {
-			eval(S, vrchol*2)
+	if S[vrchol].inc != 0 {
+		inc := S[vrchol].inc
+		S[vrchol].inc = 0
+		S[vrchol].max += inc
+		S[vrchol].min += inc
+		if vrchol < uint64(len(S)/2) {
+			if S[vrchol*2].set != -1 {
+				eval(S, vrchol*2)
+			}
+			if S[vrchol*2+1].set != -1 {
+				eval(S, vrchol*2+1)
+			}
+			S[vrchol*2].inc += inc
+			S[vrchol*2+1].inc += inc
 		}
-		if S[vrchol*2+1].set != -1 {
-			eval(S, vrchol*2+1)
-		}
-		S[vrchol*2].inc += inc
-		S[vrchol*2+1].inc += inc
+
 	}
 }
 
@@ -217,9 +220,9 @@ func solve(gen generator_t, t, N uint64, w *bufio.Writer) {
 			maxX ^= ans.max
 			sumX ^= ans.sum
 		}
-		fmt.Println(in)
-		fmt.Println(S)
-		fmt.Printf("%d %d %d\n", ans.min, ans.max, ans.sum)
+		//fmt.Println(in)
+		//fmt.Println(S)
+		//fmt.Printf("%d %d %d\n", ans.min, ans.max, ans.sum)
 	}
 	fmt.Fprintf(w, "%d\n%d\n%d\n", minX, maxX, sumX)
 }
